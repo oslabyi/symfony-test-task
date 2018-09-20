@@ -1,0 +1,76 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="jumbotron col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <form class="col-lg-12 col-md-12 col-sm-12 col-xs-12" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="saved_file" value="{{ filename }}">
+                    <input type="hidden" name="original_file" value="{{ original_file }}">
+                    <div class="form-group">
+                        <label for="fileInput">CSV file</label>
+                        {{ original_file }}
+                        <input type="file" name="csv" class="form-control-file" id="fileInput">
+                    </div>
+                    <div class="form-group">
+                        <label>Order Column</label>
+                        <select name="sort_column">
+                            <option value="total_score" selected>Total Score</option>
+                            {% for col in sort_columns %}
+                                <option value="{{ col }}" {% if col == column %} selected {% endif %}>{{ col }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="">By</label>
+                        <select name="sort_order">
+                            <option {% if sort == 'asc' %} selected {% endif %} value="asc">ASC</option>
+                            <option {% if sort == 'desc' %} selected {% endif %}value="desc">DESC</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Calculate results</button>
+                    <a id="export" href="/getXml?filename={{ filename }}" class="btn btn-danger">Export to XML</a>
+                </form>
+            </div>
+        </div>
+        <br/>
+        <div class="row">
+            <h2 class="col-lg-12 col-md-12 col-sm-12 col-xs-12">Results</h2>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th rowspan="2">Position</th>
+                    <th rowspan="2">Athlete</th>
+                    <th rowspan="2">Total score</th>
+                    <th colspan="10" class="text-center">Events</th>
+                </tr>
+                <tr>
+                    <th>100 m</th>
+                    <th>Long jump</th>
+                    <th>Shot put</th>
+                    <th>High jump</th>
+                    <th>400 m</th>
+                    <th>110 hurdles</th>
+                    <th>Discus throw</th>
+                    <th>Pole vault</th>
+                    <th>Javelin throw</th>
+                    <th>1500 m</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for row in list %}
+                    <tr>
+                        <td>{{ row['format_pos'] }}</td>
+                        <td>{{ row['name'] }}</td>
+                        <td>{{ row['total_score'] }}</td>
+
+                        {% for event in row['data'] %}
+                            <td>{{ event['score'] }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
